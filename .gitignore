@@ -25,3 +25,5 @@ go.work.sum
 .env
 
 results.json
+etzba/results/
+etzba/results/*
