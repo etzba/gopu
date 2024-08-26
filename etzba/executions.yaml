@@ -1,0 +1,9 @@
+api:
+- url: http://localhost:8080/locations
+  method: GET
+- url: http://localhost:8080/locations/2
+  method: GET
+- url: http://localhost:8080/locations/3
+  method: GET
+- url: http://localhost:8080/locations/4
+  method: GET

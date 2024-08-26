@@ -1,0 +1,61 @@
+{
+    "title": "api",
+    "startTime": "2024-08-26T14:32:00.845342328+02:00",
+    "tags": [
+        "eztba"
+    ],
+    "executionType": "",
+    "general": {
+        "jobDuration": 3,
+        "totalExecutions": 76,
+        "requestRate": 24,
+        "processedDurations": {
+            "minimumTime": 0.38687299999999997,
+            "medianTime": 0.405035,
+            "averageTime": 0.9341167631578952,
+            "maximumTime": 2.275357
+        }
+    },
+    "assignments": [
+        {
+            "title": "GET to http://localhost:8080/locations",
+            "totalExecutions": 19,
+            "processedDurations": {
+                "minimumTime": 0.390923,
+                "medianTime": 0.416167,
+                "averageTime": 0.9846037894736842,
+                "maximumTime": 1.222526
+            }
+        },
+        {
+            "title": "GET to http://localhost:8080/locations/2",
+            "totalExecutions": 19,
+            "processedDurations": {
+                "minimumTime": 0.395451,
+                "medianTime": 0.718606,
+                "averageTime": 1.0067467368421052,
+                "maximumTime": 2.275357
+            }
+        },
+        {
+            "title": "GET to http://localhost:8080/locations/3",
+            "totalExecutions": 19,
+            "processedDurations": {
+                "minimumTime": 0.387135,
+                "medianTime": 1.216482,
+                "averageTime": 0.8970641052631579,
+                "maximumTime": 1.372765
+            }
+        },
+        {
+            "title": "GET to http://localhost:8080/locations/4",
+            "totalExecutions": 19,
+            "processedDurations": {
+                "minimumTime": 0.38687299999999997,
+                "medianTime": 1.187614,
+                "averageTime": 0.8480524210526313,
+                "maximumTime": 1.240722
+            }
+        }
+    ]
+}

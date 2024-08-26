@@ -1,0 +1,32 @@
+name: cli-workflow-cicle
+# example from https://github.com/cypress-io/github-action/blob/master/.github/workflows
+on:
+  push:
+    branches:
+      - 'master'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  cli-cicle:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@v4
+
+      - name: Run unit tests
+        run: go test -v ./...
+
+      - name: Run tests with etzba
+        run: |
+          make up
+          etz api --auth=etzba/secret.yaml --exec=etzba/executions.yaml -d 3s -w 2
+          etz api --auth=etzba/secret.yaml --exec=etzba/executions.yaml -d 3s -w 8 -r 32
+          etz api --auth=etzba/secret.yaml --exec=etzba/executions.yaml -d 3s -w 16 -r 64
+          make down
+
+      - name: Run makefile
+        run: make
+
+      - name: Show saved file 🖨
+        run: cat results.json
