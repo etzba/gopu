@@ -1,0 +1,19 @@
+settings:
+  config:
+    workers: 10   # number of workers during execution
+    rps: 2    # request per second during execution
+    duration: 30s   # execution duration
+    output: /tmp/results.json   # results output file
+    verbose: true   # debug workers during execution    
+
+executions:
+  locations:    # scenario name
+    api:
+    - url: http://localhost:8080/locations
+      method: GET
+    - url: http://localhost:8080/locations/2
+      method: GET
+    - url: http://localhost:8080/locations/3
+      method: GET
+    - url: http://localhost:8080/locations/4
+      method: GET

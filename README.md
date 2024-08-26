@@ -1,2 +1,3 @@
 # gopu
-http service written only in golang
+
+Simple http service written in go
