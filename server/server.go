@@ -53,12 +53,12 @@ func (s *Server) getRouter() *mux.Router {
 	return router
 }
 
-var methodNotAllowed = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+var notFound = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 	w.Write([]byte("Not found"))
 })
 
-var notFound = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+var methodNotAllowed = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusMethodNotAllowed)
 	w.Write([]byte("Method not allowed"))
 })
