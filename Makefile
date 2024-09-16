@@ -19,6 +19,10 @@ exec:
 	etz api --auth=etzba/secret.yaml --exec=etzba/executions.yaml -d=3s -w=4 -r=12 --output=etzba/results/$$(date +%Y%m%d_%H%M%S)_result.json
 	etz api --auth=etzba/secret.yaml --exec=etzba/executions.yaml -d=3s -w=6 -r=24 --output=etzba/results/$$(date +%Y%m%d_%H%M%S)_result.json
 
+upload:
+	goploader --dir=files/ --url=http://localhost:8080/pics --method=post
+	goploader --dir=files/ --url=http://localhost:8080/docs --method=put
+
 down:
 	docker-compose down 
 
