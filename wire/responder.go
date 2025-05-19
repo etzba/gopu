@@ -41,14 +41,14 @@ func (r Respond) SendOK(w http.ResponseWriter, obj ...interface{}) {
 	}
 }
 
-func (r Respond) SendError(w http.ResponseWriter, err error) {
-	w.WriteHeader(http.StatusInternalServerError)
-	w.Write([]byte(err.Error()))
-}
-
 func (r Respond) SendNothing(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNoContent)
 	w.Write([]byte("No content"))
+}
+
+func (r Respond) SendError(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusInternalServerError)
+	w.Write([]byte(err.Error()))
 }
 
 func (r Respond) SendBadRequest(w http.ResponseWriter) {
