@@ -1,0 +1,11 @@
+{{ $baseUrl := printf "%s" "http://localhost:8080" }}
+{{ $slice := makeIntSlice 1 2 3 4 }}
+{{ $path := printf "%s" "assets/" }}
+
+file:
+- url: {{ $baseUrl }}/pics
+  method: POST
+  directory: {{ $path }}
+- url: {{ $baseUrl }}/docs
+  method: PUT
+  directory: {{ $path }}
