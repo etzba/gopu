@@ -1,0 +1,21 @@
+{{ $baseUrl := printf "%s" "http://localhost:8080" }}
+{{ $sumSlice := makeIntSliceBySum 10 }}
+api:
+{{ range $sumSlice }}
+  {{ $firstInt := getFloatInRange 5 10 }}
+  {{ $secondInt := getFloatInRange 20 40 }}
+  {{ $firstFloat := getFloatInRange 2 4 }}
+  {{ $secondFloat := getFloatInRange 6 8 }}
+- url: {{ $baseUrl }}/plus
+  method: POST
+  payload: '[{{$firstFloat}},{{$secondFloat}}]'
+- url: {{ $baseUrl }}/minus
+  method: POST
+  payload: '[{{$firstFloat}},{{$secondInt}}]'
+- url: {{ $baseUrl }}/multi
+  method: POST
+  payload: '[{{$firstInt}},{{$secondInt}}]'
+- url: {{ $baseUrl }}/divide
+  method: POST
+  payload: '[{{$firstFloat}},{{$secondInt}}]'
+{{ end }}
