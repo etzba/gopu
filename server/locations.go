@@ -9,7 +9,7 @@ import (
 func (s *Server) getLocations() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
-		s.Respoder.SendOK(w)
+		s.Respoder.SendOK(w, locations)
 	}
 }
 
@@ -32,7 +32,7 @@ func (s *Server) getLocationById() func(w http.ResponseWriter, r *http.Request) 
 		}
 
 		loc := locations[id]
-		s.Logger.Info("location: " + loc.Name + " requested")
-		s.Respoder.SendOK(w)
+		s.Logger.Info("Location is " + loc.Name)
+		s.Respoder.SendOK(w, loc)
 	}
 }

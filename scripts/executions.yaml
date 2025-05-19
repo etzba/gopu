@@ -1,10 +1,10 @@
 {{ $baseUrl := printf "%s" "http://localhost:8080" }}
-{{ $slice := makeIntSlice 1 2 3 4 }}
+{{ $slice := makeIntSlice 1 2 3 4 5 6 7 8 9 10 }}
 
 api:
 {{ range $slice }}
 - url: {{ $baseUrl }}/locations/{{ . }}
   method: GET
 {{ end }}
-- url: {{ $baseUrl }}/locations/
+- url: {{ $baseUrl }}/locations
   method: GET
