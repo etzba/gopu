@@ -14,16 +14,26 @@ servers:
 paths:
   /locations:
     get:
-      summary: Returns a list of results.
+      summary: Returns a list of locations.
       description: Optional extended description in CommonMark or HTML.
       etzba: true
       responses:
         '200':    # status code
-          description: A JSON array of results
+          description: A JSON array of all locations
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Result'
+                $ref: '#/components/schemas/Location'
+    post:
+      summary: Add a new location to server
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Location"
+      responses:
+        "200":
+          description: OK
   /locations/{locationId}:
     get:
       summary: Returns a result by ID.
@@ -44,16 +54,6 @@ paths:
                     type: integer
                     format: int64
                     example: 4
-                  created:
-                    type: string
-                    format: date # or date-time
-                    example: "2200-01-01T13:09:35.835Z"
-                    pattern: "YYYY-MM-DD"
-                  modified:
-                    type: string
-                    format: date # or date-time
-                    example: "2200-01-01T13:09:35.835Z"
-                    pattern: "YYYY-MM-DD"
                   name:
                     type: string
                     example: "kenman"
@@ -72,3 +72,105 @@ paths:
                     type: number
                     format: float
                     example: 12.6682134654
+    put:
+      summary: Update a location
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                  example: 4
+                name:
+                  type: string
+                  example: "kenman"
+                  minLength: 3
+                  maxLength: 5
+                address:
+                  type: string
+                  example: "Ilivein street 32, Dillton 14532"
+                  minLength: 12
+                  maxLength: 48
+                longtitude: 
+                  type: number
+                  format: float
+                  example: 89.0653450122
+                latitudes: 
+                  type: number
+                  format: float
+                  example: 12.6682134654
+      responses:
+        "200":
+          description: OK
+  /distance:
+    post:
+      summary: Add a new location to server
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Distance"
+
+
+components:
+  schemas:
+    Location:
+      title: A Location somewhere in the world
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 4
+        name:
+          type: string
+          example: "kenman"
+          minLength: 2
+          maxLength: 24
+        address:
+          type: string
+          example: "Ilivein street 32, Dillton 14532"
+          minLength: 8
+          maxLength: 64
+        longtitude: 
+          type: number
+          format: float
+          example: 89.0653450122
+        latitudes: 
+          type: number
+          format: float
+          example: 12.6682134654
+      required:
+        - name
+        - address
+        - longtitude
+        - latitude
+    Location:
+      title: A Location somewhere in the world
+      type: object
+      properties:
+        formula:
+          type: string
+          example: "pythagoras"
+          minLength: 2
+          maxLength: 24
+        fromPlace:
+          type: string
+          example: "Taj Mahal"
+          minLength: 2
+          maxLength: 64
+        longtitude: 
+          type: number
+          format: float
+          example: 89.0653450122
+        latitudes: 
+          type: number
+          format: float
+          example: 12.6682134654
+      required:
+        - fromPlace
+        - longtitude
+        - latitude
