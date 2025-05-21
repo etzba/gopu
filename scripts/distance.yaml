@@ -1,0 +1,13 @@
+{{ $baseUrl := printf "%s" "http://localhost:8080" }}
+{{ $slice := makeAnySlice "Great Pyramid at Giza" "Statue of Liberty" "Eiffel Tower" "Ayers Rock (Uluru)" "Mt. Kilimanjaro" "Taj Mahal" "Golden Gate Bridge" "Machu Picchu" "Brandenburg Gate" "CN Tower" }}
+
+api:
+{{ range $slice }}
+- url: {{ $baseUrl }}/distance
+  method: POST
+  data: 
+    formula: "pythagoras"
+    fromPlace: {{ . }}
+    longtitude: {{ getFloatInRange 21 90 }}
+    latitude: {{ getFloatInRange -80 10 }}
+{{ end }}
