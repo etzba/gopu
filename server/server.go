@@ -6,6 +6,7 @@ import (
 	"github.com/etzba/gopu/pkg/logger"
 	"github.com/etzba/gopu/wire"
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Server struct {
@@ -50,6 +51,7 @@ func (s *Server) getRouter() *mux.Router {
 	router.HandleFunc("/locations/{id}", s.getLocationById()).Methods("GET")
 	router.HandleFunc("/pics", s.uploadFileHandlerfunc()).Methods("POST")
 	router.HandleFunc("/docs", s.uploadFileHandlerfunc()).Methods("PUT")
+	router.HandleFunc("/metrics", promhttp.Handler().ServeHTTP).Methods("GET")
 	return router
 }
 
