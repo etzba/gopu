@@ -51,7 +51,7 @@ func (s *Server) getRouter() *mux.Router {
 	router.HandleFunc("/locations/{id}", s.getLocationById()).Methods("GET")
 	router.HandleFunc("/pics", s.uploadFileHandlerfunc()).Methods("POST")
 	router.HandleFunc("/docs", s.uploadFileHandlerfunc()).Methods("PUT")
-	router.HandleFunc("/metrics", promhttp.Handler().ServeHTTP).Methods("GET")
+	router.Handle("/metrics", promhttp.Handler())
 	return router
 }
 
