@@ -1,0 +1,22 @@
+{{ $baseUrl := printf "%s" "http://localhost:8080" }}
+{{ $slice := makeIntSlice 1 2 3 4 5 6 7 8 9 10 }}
+
+api:
+{{ range $slice }}
+- url: {{ $baseUrl }}/locations/{{ . }}
+  method: GET
+{{ end }}
+- url: {{ $baseUrl }}/locations
+  method: GET
+{{ range $slice }}
+- url: {{ $baseUrl }}/locations
+  method: POST
+  data: 
+    name: {{ getRandStringInLength 5 }}
+    address: {{ getRandStringInLength 23 }}
+    longtitude: {{ getFloatInRange 21 90 }}
+    latitude: {{ getFloatInRange -80 10 }}
+{{ end }}
+- url: {{ $baseUrl }}/locations
+  method: POST
+  payload: '{ "name": "Etz", "address": "Ba Etzba etz",  "longtitude": 54.4334523123, "latitude": 54.321312234 }'

@@ -52,7 +52,9 @@ func (s *Server) getRouter() *mux.Router {
 	router.MethodNotAllowedHandler = methodNotAllowed
 
 	router.HandleFunc("/locations", s.getLocations()).Methods("GET")
+	router.HandleFunc("/locations", s.postLocation()).Methods("POST")
 	router.HandleFunc("/locations/{id}", s.getLocationById()).Methods("GET")
+	router.HandleFunc("/distance", s.getDistance()).Methods("POST")
 	router.HandleFunc("/plus", s.postNumbersAddition()).Methods("POST")
 	router.HandleFunc("/minus", s.postNumbersSubtraction()).Methods("POST")
 	router.HandleFunc("/multi", s.postNumbersMultiply()).Methods("POST")

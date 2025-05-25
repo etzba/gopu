@@ -1,4 +1,4 @@
-etz api --exec=scripts/executions.yaml -w 5 -r 5 -d 3s
+etz api --exec=scripts/distance.yaml -w 5 -r 5 -d 3s
 sleep 5
 etz api --exec=scripts/calc.yaml -w=5 -r=5 -d=3s
 sleep 5
