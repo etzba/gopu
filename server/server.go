@@ -6,6 +6,8 @@ import (
 	"github.com/etzba/gopu/pkg/logger"
 	"github.com/etzba/gopu/wire"
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Server struct {
@@ -34,6 +36,9 @@ func New(logger *logger.Log, address string) *Server {
 }
 
 func (s *Server) Run() error {
+	prometheus.Register(httpRequestCounter)
+	prometheus.Register(numberOfConcurrentUsers)
+	prometheus.Register(httpRequestDuration)
 	s.Logger.Info("Start server in port 8080")
 	if err := s.HTTPServer.ListenAndServe(); err != nil {
 		s.Logger.Error("cannot run http server - listen and serve", err)
@@ -50,6 +55,7 @@ func (s *Server) getRouter() *mux.Router {
 	router.HandleFunc("/locations/{id}", s.getLocationById()).Methods("GET")
 	router.HandleFunc("/pics", s.uploadFileHandlerfunc()).Methods("POST")
 	router.HandleFunc("/docs", s.uploadFileHandlerfunc()).Methods("PUT")
+	router.Handle("/metrics", promhttp.Handler())
 	return router
 }
 
