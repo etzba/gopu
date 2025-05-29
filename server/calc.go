@@ -4,12 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func (s *Server) getResultByUrlPath() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		now := time.Now()
+		s.shipper.Collect(now, r)
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		s.Respoder.SendOK(w)
+		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
 
@@ -17,6 +21,8 @@ func (s *Server) getResultByUrlPath() func(w http.ResponseWriter, r *http.Reques
 // client sent json payload as follow: '[4.543, 3, 1]'. floats and integers allowed, string will return bad request
 func (s *Server) postNumbersAddition() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		now := time.Now()
+		s.shipper.Collect(now, r)
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		var nums []interface{}
 		if err := json.NewDecoder(r.Body).Decode(&nums); err != nil {
@@ -44,23 +50,23 @@ func (s *Server) postNumbersAddition() func(w http.ResponseWriter, r *http.Reque
 			var result interface{} = []int{intResult}
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
-			return
 		case floatResult != 0 && floatResult == 0:
 			var result interface{} = []float64{floatResult}
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
-			return
 		default:
 			var result interface{} = []float64{floatResult + float64(intResult)}
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
-			return
 		}
+		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
 
 func (s *Server) postNumbersSubtraction() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		now := time.Now()
+		s.shipper.Collect(now, r)
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		var nums []interface{}
 		if err := json.NewDecoder(r.Body).Decode(&nums); err != nil {
@@ -96,22 +102,22 @@ func (s *Server) postNumbersSubtraction() func(w http.ResponseWriter, r *http.Re
 			var result interface{} = []int{intResult}
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
-			return
 		case floatResult != 0 && floatResult == 0:
 			var result interface{} = []float64{floatResult}
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
-			return
 		default:
 			var result interface{} = []float64{floatResult + float64(intResult)}
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
-			return
 		}
+		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
 func (s *Server) postNumbersMultiply() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		now := time.Now()
+		s.shipper.Collect(now, r)
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		var nums []interface{}
 		if err := json.NewDecoder(r.Body).Decode(&nums); err != nil {
@@ -152,18 +158,19 @@ func (s *Server) postNumbersMultiply() func(w http.ResponseWriter, r *http.Reque
 			var result interface{} = []float64{floatResult}
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
-			return
 		default:
 			var result interface{} = []float64{floatResult + float64(intResult)}
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
-			return
 		}
+		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
 
 func (s *Server) postNumbersDivide() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		now := time.Now()
+		s.shipper.Collect(now, r)
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		var nums []interface{}
 		if err := json.NewDecoder(r.Body).Decode(&nums); err != nil {
@@ -199,17 +206,15 @@ func (s *Server) postNumbersDivide() func(w http.ResponseWriter, r *http.Request
 			var result interface{} = []int{intResult}
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
-			return
 		case floatResult != 0 && floatResult == 0:
 			var result interface{} = []float64{floatResult}
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
-			return
 		default:
 			var result interface{} = []float64{floatResult + float64(intResult)}
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
-			return
 		}
+		s.shipper.SetCurrentUsersEnd(r)
 	}
 }

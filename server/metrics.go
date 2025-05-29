@@ -1,30 +1,105 @@
 package server
 
 import (
+	"net/http"
+	"time"
+
+	"github.com/etzba/gopu/pkg/logger"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
-var httpRequestCounter = prometheus.NewCounter(
-	prometheus.CounterOpts{
-		Name:      "http_request_count",
-		Namespace: "gopu",
-		Help:      "Number of request handled by handler",
-	},
-)
+var labels = []string{"endpoint", "content_type"}
 
-var numberOfConcurrentUsers = prometheus.NewGauge(
-	prometheus.GaugeOpts{
-		Name:      "concurrent_users",
-		Namespace: "gopu",
-		Help:      "Number of clients using the endpoint at the same time",
-	},
-)
+type Shipper interface {
+	Register()
+	Collect(start time.Time, r *http.Request)
+	SetCurrentUsersEnd(r *http.Request)
+	NewGauge(name, help string, labels []string) *prometheus.GaugeVec
+	NewCounter(name, help string, labels []string) *prometheus.CounterVec
+	NewHistogram(name, help string, labels []string) *prometheus.HistogramVec
+}
 
-var (
-	httpRequestDuration = promauto.NewHistogram(prometheus.HistogramOpts{
-		Name:      "http_request_duration",
+// NewShipper creates new prometheus api client to push metrics
+func NewShipper(logger *logger.Log) Shipper {
+	return &collector{
+		Logger:    logger,
 		Namespace: "gopu",
-		Help:      "Time of request processing in http handler",
-	})
-)
+	}
+}
+
+type collector struct {
+	Logger    *logger.Log
+	Namespace string
+	Metrics   Metrics
+}
+
+func (c *collector) Register() {
+	c.Logger.Info("register metrics")
+	c.Metrics.concurrentUsers = c.NewGauge("conccurent_users", "count handlers current open tcp connections", labels)
+	c.Metrics.handlerDuration = c.NewHistogram("request_duration", "measure the time of request until response in handler", labels)
+	c.Metrics.httpRequestCount = c.NewCounter("total_requests", "count requests to endpoint", labels)
+
+	prometheus.MustRegister(c.Metrics.concurrentUsers)
+	prometheus.MustRegister(c.Metrics.handlerDuration)
+	prometheus.MustRegister(c.Metrics.httpRequestCount)
+}
+
+// NewGauge https://prometheus.io/docs/concepts/metric_types/#gauge
+// A gauge is a metric that represents a single numerical value that can arbitrarily go up and down.
+func (c *collector) NewGauge(name, help string, labels []string) *prometheus.GaugeVec {
+	gauge := prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: c.Namespace,
+		Subsystem: "apiserver",
+		Name:      name,
+		Help:      help,
+	}, labels)
+	return gauge
+}
+
+// NewCounter https://prometheus.io/docs/concepts/metric_types/#counter
+// A counter is a cumulative metric that represents a single monotonically increasing counter whose value can only increase or be reset to zero on restart.
+// Use to count total executions from a result
+func (c *collector) NewCounter(name, help string, labels []string) *prometheus.CounterVec {
+	counter := prometheus.NewCounterVec(prometheus.CounterOpts{
+		Namespace: c.Namespace,
+		Subsystem: "apiserver",
+		Name:      name,
+		Help:      help,
+	}, labels)
+	return counter
+}
+
+// NewHistogram https://prometheus.io/docs/concepts/metric_types/#histogram
+// A histogram samples observations (usually things like request durations or response sizes) and counts them in configurable buckets. It also provides a sum of all observed values.
+// The best fit for this tool to collect results.
+func (c *collector) NewHistogram(name, help string, labels []string) *prometheus.HistogramVec {
+	histogram := prometheus.NewHistogramVec(prometheus.HistogramOpts{
+		Namespace: c.Namespace,
+		Subsystem: "apiserver",
+		Name:      name,
+		Help:      help,
+	}, labels)
+	return histogram
+}
+
+type Metrics struct {
+	httpRequestCount *prometheus.CounterVec
+	concurrentUsers  *prometheus.GaugeVec
+	handlerDuration  *prometheus.HistogramVec
+	Statuses         StatusMetrics
+}
+
+type StatusMetrics struct {
+	status  int
+	counter *prometheus.CounterVec
+}
+
+func (c *collector) Collect(start time.Time, r *http.Request) {
+	c.Metrics.httpRequestCount.WithLabelValues(r.RequestURI, r.Header.Get("Content-type")).Inc()
+	c.Metrics.concurrentUsers.WithLabelValues(r.RequestURI, r.Header.Get("Content-type")).Add(1)
+	c.Metrics.handlerDuration.WithLabelValues(r.RequestURI, r.Header.Get("Content-type")).Observe(float64(time.Since(start)))
+}
+
+func (c *collector) SetCurrentUsersEnd(r *http.Request) {
+	c.Metrics.concurrentUsers.WithLabelValues(r.RequestURI, r.Header.Get("Content-type")).Dec()
+}

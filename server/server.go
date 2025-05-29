@@ -15,6 +15,7 @@ type Server struct {
 	HTTPServer *http.Server
 	Mux        *http.ServeMux
 	Respoder   wire.Responder
+	shipper    Shipper
 }
 
 func New(logger *logger.Log, address string) *Server {
@@ -25,6 +26,9 @@ func New(logger *logger.Log, address string) *Server {
 		Logger:   logger,
 		Respoder: responder,
 	}
+	logger.Info("configuring prometheus shipper and register metrics")
+	server.shipper = NewShipper(logger)
+	server.shipper.Register()
 	router := server.getRouter()
 	server.Mux = http.NewServeMux()
 	server.Mux.Handle("/", router)
@@ -36,9 +40,6 @@ func New(logger *logger.Log, address string) *Server {
 }
 
 func (s *Server) Run() error {
-	prometheus.Register(httpRequestCounter)
-	prometheus.Register(numberOfConcurrentUsers)
-	prometheus.Register(httpRequestDuration)
 	s.Logger.Info("Start server in port 8080")
 	if err := s.HTTPServer.ListenAndServe(); err != nil {
 		s.Logger.Error("cannot run http server - listen and serve", err)
@@ -61,7 +62,10 @@ func (s *Server) getRouter() *mux.Router {
 	router.HandleFunc("/divide", s.postNumbersDivide()).Methods("POST")
 	router.HandleFunc("/pics", s.uploadFileHandlerfunc()).Methods("POST")
 	router.HandleFunc("/docs", s.uploadFileHandlerfunc()).Methods("PUT")
-	router.Handle("/metrics", promhttp.Handler())
+	router.Handle("/metrics", promhttp.HandlerFor(prometheus.DefaultGatherer,
+		promhttp.HandlerOpts{
+			EnableOpenMetrics: true,
+		})).Methods("GET")
 	return router
 }
 
