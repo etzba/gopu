@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"time"
 
 	"github.com/etzba/gopu/wire"
 )
@@ -12,6 +13,8 @@ import (
 func (s *Server) getDistance() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
+		now := time.Now()
+		s.shipper.Collect(now, r)
 		dis := wire.Distance{}
 		if err := json.NewDecoder(r.Body).Decode(&dis); err != nil {
 			s.Logger.Error("Failed to create new decoder", err)
@@ -43,6 +46,7 @@ func (s *Server) getDistance() func(w http.ResponseWriter, r *http.Request) {
 		obj["distance"] = distance
 		s.Logger.Info(fmt.Sprintf("Client located about %fkm from %s", distance, place.Name))
 		s.Respoder.SendOK(w, obj)
+		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
 

@@ -12,17 +12,19 @@ import (
 
 func (s *Server) getLocations() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		now := time.Now()
+		s.shipper.Collect(now, r)
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		s.Respoder.SendOK(w, locations)
+		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
 
 func (s *Server) postLocation() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
-		httpRequestCounter.Inc()
-		numberOfConcurrentUsers.Add(1)
 		now := time.Now()
+		s.shipper.Collect(now, r)
+		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		loc := wire.Location{}
 		if err := json.NewDecoder(r.Body).Decode(&loc); err != nil {
 			s.Logger.Error("Failed to create new decoder", err)
@@ -39,18 +41,16 @@ func (s *Server) postLocation() func(w http.ResponseWriter, r *http.Request) {
 
 		locations = append(locations, location)
 		s.Logger.Info("Add a new location to memory " + loc.Name)
-		numberOfConcurrentUsers.Dec()
-		httpRequestDuration.Observe(float64(time.Since(now)))
 		s.Respoder.SendOK(w)
+		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
 
 func (s *Server) getLocationById() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
-		httpRequestCounter.Inc()
-		numberOfConcurrentUsers.Add(1)
 		now := time.Now()
+		s.shipper.Collect(now, r)
+		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		idStr, _ := strings.CutPrefix(r.URL.Path, "/locations/")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
@@ -61,8 +61,7 @@ func (s *Server) getLocationById() func(w http.ResponseWriter, r *http.Request) 
 
 		loc := locations[id]
 		s.Logger.Info("Location is " + loc.Name)
-		numberOfConcurrentUsers.Dec()
-		httpRequestDuration.Observe(float64(time.Since(now)))
 		s.Respoder.SendOK(w)
+		s.shipper.SetCurrentUsersEnd(r)
 	}
 }

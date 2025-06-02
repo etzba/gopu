@@ -4,7 +4,7 @@ api:
   image:
     repository: etzba/gopu
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: "development"
   url: gopu-svc
   containerPort: 8080
   resources:

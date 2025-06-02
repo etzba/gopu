@@ -13,9 +13,8 @@ const maxUploadSize = 5 * 1024 * 1024 * 1024
 
 func (s *Server) uploadFileHandlerfunc() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		httpRequestCounter.Inc()
-		numberOfConcurrentUsers.Add(1)
 		now := time.Now()
+		s.shipper.Collect(now, r)
 		r.Body = http.MaxBytesReader(w, r.Body, maxUploadSize)
 		if err := r.ParseMultipartForm(maxUploadSize); err != nil {
 			s.Logger.Error("Failed to parse multipart form", err)
@@ -66,9 +65,8 @@ func (s *Server) uploadFileHandlerfunc() func(w http.ResponseWriter, r *http.Req
 			return
 		}
 
-		numberOfConcurrentUsers.Dec()
-		httpRequestDuration.Observe(float64(time.Since(now)))
 		s.Logger.Info("Upload file successfully. filename: " + fileHeader.Filename)
 		s.Respoder.SendNothing(w)
+		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
