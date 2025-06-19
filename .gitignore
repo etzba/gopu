@@ -33,3 +33,6 @@ uploads/
 uploads/*
 assets/
 assets/*
+
+pkg/debug
+pkg/debug/*

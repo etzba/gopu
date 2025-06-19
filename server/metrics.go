@@ -8,12 +8,11 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-var labels = []string{"endpoint", "content_type"}
+var labels = []string{"endpoint", "method", "content_type"}
 
 type Shipper interface {
 	Register()
 	Collect(start time.Time, r *http.Request)
-	SetCurrentUsersEnd(r *http.Request)
 	NewGauge(name, help string, labels []string) *prometheus.GaugeVec
 	NewCounter(name, help string, labels []string) *prometheus.CounterVec
 	NewHistogram(name, help string, labels []string) *prometheus.HistogramVec
@@ -35,11 +34,9 @@ type collector struct {
 
 func (c *collector) Register() {
 	c.Logger.Info("register metrics")
-	c.Metrics.concurrentUsers = c.NewGauge("conccurent_users", "count handlers current open tcp connections", labels)
 	c.Metrics.handlerDuration = c.NewHistogram("request_duration", "measure the time of request until response in handler", labels)
 	c.Metrics.httpRequestCount = c.NewCounter("total_requests", "count requests to endpoint", labels)
 
-	prometheus.MustRegister(c.Metrics.concurrentUsers)
 	prometheus.MustRegister(c.Metrics.handlerDuration)
 	prometheus.MustRegister(c.Metrics.httpRequestCount)
 }
@@ -84,22 +81,10 @@ func (c *collector) NewHistogram(name, help string, labels []string) *prometheus
 
 type Metrics struct {
 	httpRequestCount *prometheus.CounterVec
-	concurrentUsers  *prometheus.GaugeVec
 	handlerDuration  *prometheus.HistogramVec
-	Statuses         StatusMetrics
-}
-
-type StatusMetrics struct {
-	status  int
-	counter *prometheus.CounterVec
 }
 
 func (c *collector) Collect(start time.Time, r *http.Request) {
-	c.Metrics.httpRequestCount.WithLabelValues(r.RequestURI, r.Header.Get("Content-type")).Inc()
-	c.Metrics.concurrentUsers.WithLabelValues(r.RequestURI, r.Header.Get("Content-type")).Add(1)
-	c.Metrics.handlerDuration.WithLabelValues(r.RequestURI, r.Header.Get("Content-type")).Observe(float64(time.Since(start)))
-}
-
-func (c *collector) SetCurrentUsersEnd(r *http.Request) {
-	c.Metrics.concurrentUsers.WithLabelValues(r.RequestURI, r.Header.Get("Content-type")).Dec()
+	c.Metrics.httpRequestCount.WithLabelValues(r.URL.Path, r.Method, r.Header.Get("Content-type")).Inc()
+	c.Metrics.handlerDuration.WithLabelValues(r.URL.Path, r.Method, r.Header.Get("Content-type")).Observe(float64(time.Since(start)))
 }

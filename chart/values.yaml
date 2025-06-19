@@ -3,7 +3,6 @@ api:
   name: gopu
   image:
     repository: etzba/gopu
-    pullPolicy: IfNotPresent
     tag: "development"
   url: gopu-svc
   containerPort: 8080
