@@ -38,7 +38,7 @@ func (s *Server) postLocation() func(w http.ResponseWriter, r *http.Request) {
 			Latitude:   loc.Latitude,
 		}
 
-		locations = append(locations, location)
+		s.locations = append(s.locations, location)
 		s.Logger.Info("Add a new location to memory " + loc.Name)
 		s.Respoder.SendOK(w)
 	}
@@ -57,7 +57,7 @@ func (s *Server) getLocationById() func(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 
-		loc := locations[id]
+		loc := s.locations[id]
 		s.Logger.Info("Location is " + loc.Name)
 		s.Respoder.SendOK(w)
 	}

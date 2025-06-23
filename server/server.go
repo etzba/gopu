@@ -16,6 +16,7 @@ type Server struct {
 	Mux        *http.ServeMux
 	Respoder   wire.Responder
 	shipper    Shipper
+	locations  []wire.Location
 }
 
 func New(logger *logger.Log, address string) *Server {
@@ -23,9 +24,11 @@ func New(logger *logger.Log, address string) *Server {
 		Logger: logger,
 	}
 	server := &Server{
-		Logger:   logger,
-		Respoder: responder,
+		Logger:    logger,
+		Respoder:  responder,
+		locations: make([]wire.Location, 1000),
 	}
+	server.locations = append(server.locations, locations...)
 	logger.Info("configuring prometheus shipper and register metrics")
 	server.shipper = NewShipper(logger)
 	server.shipper.Register()
