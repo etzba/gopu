@@ -10,10 +10,9 @@ import (
 func (s *Server) getResultByUrlPath() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
-		s.shipper.Collect(now, r)
+		defer s.shipper.Collect(now, r)
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		s.Respoder.SendOK(w)
-		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
 
@@ -22,7 +21,7 @@ func (s *Server) getResultByUrlPath() func(w http.ResponseWriter, r *http.Reques
 func (s *Server) postNumbersAddition() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
-		s.shipper.Collect(now, r)
+		defer s.shipper.Collect(now, r)
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		var nums []interface{}
 		if err := json.NewDecoder(r.Body).Decode(&nums); err != nil {
@@ -59,14 +58,13 @@ func (s *Server) postNumbersAddition() func(w http.ResponseWriter, r *http.Reque
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
 		}
-		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
 
 func (s *Server) postNumbersSubtraction() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
-		s.shipper.Collect(now, r)
+		defer s.shipper.Collect(now, r)
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		var nums []interface{}
 		if err := json.NewDecoder(r.Body).Decode(&nums); err != nil {
@@ -111,13 +109,12 @@ func (s *Server) postNumbersSubtraction() func(w http.ResponseWriter, r *http.Re
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
 		}
-		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
 func (s *Server) postNumbersMultiply() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
-		s.shipper.Collect(now, r)
+		defer s.shipper.Collect(now, r)
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		var nums []interface{}
 		if err := json.NewDecoder(r.Body).Decode(&nums); err != nil {
@@ -163,14 +160,13 @@ func (s *Server) postNumbersMultiply() func(w http.ResponseWriter, r *http.Reque
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
 		}
-		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
 
 func (s *Server) postNumbersDivide() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
-		s.shipper.Collect(now, r)
+		defer s.shipper.Collect(now, r)
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		var nums []interface{}
 		if err := json.NewDecoder(r.Body).Decode(&nums); err != nil {
@@ -215,6 +211,5 @@ func (s *Server) postNumbersDivide() func(w http.ResponseWriter, r *http.Request
 			s.Logger.Info(fmt.Sprintf("Given numbers were %v and result was %v", nums, result))
 			s.Respoder.SendOK(w, result)
 		}
-		s.shipper.SetCurrentUsersEnd(r)
 	}
 }

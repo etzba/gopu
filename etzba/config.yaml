@@ -1,19 +1,245 @@
-settings:
-  config:
-    workers: 10   # number of workers during execution
-    rps: 2    # request per second during execution
-    duration: 30s   # execution duration
-    output: /tmp/results.json   # results output file
-    verbose: true   # debug workers during execution    
+{{ $gopu := printf "%s" "http://localhost:8080" }}
+{{ $placeSlice := makeAnySlice "Great Pyramid at Giza" "Statue of Liberty" "Eiffel Tower" "Ayers Rock (Uluru)" "Mt. Kilimanjaro" "Taj Mahal" "Golden Gate Bridge" "Machu Picchu" "Brandenburg Gate" "CN Tower" }}
+{{ $intSlice := makeIntSlice 1 2 3 4 }}
+{{ $sumSlice := makeIntSliceBySum 100 }}
+{{ $filesPath := printf "%s" "files/" }}
+{{ $resultsPath := printf "%s" "results" }}
 
 executions:
-  locations:    # scenario name
+  easyDist:
+    config:
+      workers: 10
+      rps: 40
+      duration: 5s
+      output: {{ $resultsPath }}/easyDist.json"
     api:
-    - url: http://localhost:8080/locations
+    {{ range $placeSlice }}
+    - url: {{ $gopu }}/distance
+      method: POST
+      data: 
+        formula: "pythagoras"
+        fromPlace: {{ . }}
+        longtitude: {{ getFloatInRange 21 90 }}
+        latitude: {{ getFloatInRange -80 10 }}
+    {{ end }}
+  mediumDist:
+    config:
+      workers: 30
+      rps: 120
+      duration: 5s
+      output: {{ $resultsPath }}/mediumDist.json
+    api:      
+    {{ range $placeSlice }}
+    - url: {{ $gopu }}/distance
+      method: POST
+      data: 
+        formula: "pythagoras"
+        fromPlace: {{ . }}
+        longtitude: {{ getFloatInRange 21 90 }}
+        latitude: {{ getFloatInRange -80 10 }}
+    {{ end }}
+  hardDist:
+    config:
+      workers: 50
+      rps: 200
+      duration: 5s
+      output: {{ $resultsPath }}/hardDist.json
+    api:      
+    {{ range $placeSlice }}
+    - url: {{ $gopu }}/distance
+      method: POST
+      data: 
+        formula: "pythagoras"
+        fromPlace: {{ . }}
+        longtitude: {{ getFloatInRange 21 90 }}
+        latitude: {{ getFloatInRange -80 10 }}
+    {{ end }}
+  easyCalc:
+    config:
+      workers: 10
+      rps: 50
+      duration: 3s
+      output: {{ $resultsPath }}/easyCalc.json
+    api:
+    {{ range $sumSlice }}
+      {{ $firstInt := getFloatInRange 5 10 }}
+      {{ $secondInt := getFloatInRange 20 40 }}
+      {{ $firstFloat := getFloatInRange 2 4 }}
+      {{ $secondFloat := getFloatInRange 6 8 }}
+    - url: {{ $gopu }}/plus
+      method: POST
+      payload: '[{{$firstFloat}},{{$secondFloat}}]'
+    - url: {{ $gopu }}/minus
+      method: POST
+      payload: '[{{$firstFloat}},{{$secondInt}}]'
+    - url: {{ $gopu }}/multi
+      method: POST
+      payload: '[{{$firstInt}},{{$secondInt}}]'
+    - url: {{ $gopu }}/divide
+      method: POST
+      payload: '[{{$firstFloat}},{{$secondInt}}]'
+    {{ end }}
+  mediumCalc:
+    config:
+      workers: 50
+      rps: 200
+      duration: 10s
+      output: {{ $resultsPath }}/mediumCalc.json
+    api:
+    {{ range $sumSlice }}
+      {{ $firstInt := getFloatInRange 5 10 }}
+      {{ $secondInt := getFloatInRange 20 40 }}
+      {{ $firstFloat := getFloatInRange 2 4 }}
+      {{ $secondFloat := getFloatInRange 6 8 }}
+    - url: {{ $gopu }}/plus
+      method: POST
+      payload: '[{{$firstFloat}},{{$secondFloat}}]'
+    - url: {{ $gopu }}/minus
+      method: POST
+      payload: '[{{$firstFloat}},{{$secondInt}}]'
+    - url: {{ $gopu }}/multi
+      method: POST
+      payload: '[{{$firstInt}},{{$secondInt}}]'
+    - url: {{ $gopu }}/divide
+      method: POST
+      payload: '[{{$firstFloat}},{{$secondInt}}]'
+    {{ end }}
+  hardCalc:
+    config:
+      workers: 100
+      rps: 500
+      duration: 5s
+      output: {{ $resultsPath }}/hardCalc.json
+    api:
+    {{ range $sumSlice }}
+      {{ $firstInt := getFloatInRange 5 10 }}
+      {{ $secondInt := getFloatInRange 20 40 }}
+      {{ $firstFloat := getFloatInRange 2 4 }}
+      {{ $secondFloat := getFloatInRange 6 8 }}
+    - url: {{ $gopu }}/plus
+      method: POST
+      payload: '[{{$firstFloat}},{{$secondFloat}}]'
+    - url: {{ $gopu }}/minus
+      method: POST
+      payload: '[{{$firstFloat}},{{$secondInt}}]'
+    - url: {{ $gopu }}/multi
+      method: POST
+      payload: '[{{$firstInt}},{{$secondInt}}]'
+    - url: {{ $gopu }}/divide
+      method: POST
+      payload: '[{{$firstFloat}},{{$secondInt}}]'
+    {{ end }}
+  easyFiles: 
+    config:
+      workers: 10
+      rps: 30
+      duration: 8s
+      output: {{ $resultsPath }}/easyFile.json 
+    file:
+    - url: {{ $gopu }}/pics
+      method: POST
+      directory: {{ $filesPath }}
+    - url: {{ $gopu }}/docs
+      method: PUT
+      directory: {{ $filesPath }}
+  mediumFiles: 
+    config:
+      workers: 15
+      rps: 45
+      duration: 10s
+      output: {{ $resultsPath }}/mediumFile.json 
+    file:
+    - url: {{ $gopu }}/pics
+      method: POST
+      directory: {{ $filesPath }}
+    - url: {{ $gopu }}/docs
+      method: PUT
+      directory: {{ $filesPath }}
+  hardFiles: 
+    config:
+      workers: 30
+      rps: 90
+      duration: 3s
+      output: {{ $resultsPath }}/hardFile.json 
+    file:
+    - url: {{ $gopu }}/pics
+      method: POST
+      directory: {{ $filesPath }}
+    - url: {{ $gopu }}/docs
+      method: PUT
+      directory: {{ $filesPath }}
+  easyLoc:  
+    config:
+      workers: 10
+      rps: 40
+      duration: 12s
+      output: {{ $resultsPath }}/easyLoc.json
+    api:
+    {{ range $intSlice }}
+    - url: {{ $gopu }}/locations/{{ . }}
       method: GET
-    - url: http://localhost:8080/locations/2
+    {{ end }}
+    - url: {{ $gopu }}/locations
       method: GET
-    - url: http://localhost:8080/locations/3
+    {{ range $intSlice }}
+    - url: {{ $gopu }}/locations
+      method: POST
+      data: 
+        name: {{ getRandStringInLength 5 }}
+        address: {{ getRandStringInLength 23 }}
+        longtitude: {{ getFloatInRange 21 90 }}
+        latitude: {{ getFloatInRange -80 10 }}
+    {{ end }}
+    - url: {{ $gopu }}/locations
+      method: POST
+      payload: '{ "name": "Etz", "address": "Ba Etzba etz",  "longtitude": 54.4334523123, "latitude": 54.321312234 }'
+  mediumLoc:  
+    config:
+      workers: 50
+      rps: 200
+      duration: 8s
+      output: {{ $resultsPath }}/mediumLoc.json
+    api:
+    {{ range $intSlice }}
+    - url: {{ $gopu }}/locations/{{ . }}
       method: GET
-    - url: http://localhost:8080/locations/4
+    {{ end }}
+    - url: {{ $gopu }}/locations
       method: GET
+    {{ range $intSlice }}
+    - url: {{ $gopu }}/locations
+      method: POST
+      data: 
+        name: {{ getRandStringInLength 5 }}
+        address: {{ getRandStringInLength 23 }}
+        longtitude: {{ getFloatInRange 21 90 }}
+        latitude: {{ getFloatInRange -80 10 }}
+    {{ end }}
+    - url: {{ $gopu }}/locations
+      method: POST
+      payload: '{ "name": "Etz", "address": "Ba Etzba etz",  "longtitude": 54.4334523123, "latitude": 54.321312234 }'
+  hardLoc:  
+    config:
+      workers: 100
+      rps: 500
+      duration: 3s
+      output: {{ $resultsPath }}/hardLoc.json
+    api:
+    {{ range $intSlice }}
+    - url: {{ $gopu }}/locations/{{ . }}
+      method: GET
+    {{ end }}
+    - url: {{ $gopu }}/locations
+      method: GET
+    {{ range $intSlice }}
+    - url: {{ $gopu }}/locations
+      method: POST
+      data: 
+        name: {{ getRandStringInLength 5 }}
+        address: {{ getRandStringInLength 23 }}
+        longtitude: {{ getFloatInRange 21 90 }}
+        latitude: {{ getFloatInRange -80 10 }}
+    {{ end }}
+    - url: {{ $gopu }}/locations
+      method: POST
+      payload: '{ "name": "Etz", "address": "Ba Etzba etz",  "longtitude": 54.4334523123, "latitude": 54.321312234 }'

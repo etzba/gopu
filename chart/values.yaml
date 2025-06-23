@@ -3,17 +3,16 @@ api:
   name: gopu
   image:
     repository: etzba/gopu
-    pullPolicy: IfNotPresent
     tag: "development"
   url: gopu-svc
   containerPort: 8080
   resources:
     limits:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 400m
+      memory: 2048Mi
     requests:
       cpu: 100m
-      memory: 128Mi
+      memory: 512Mi
   nodeSelector: {}
   tolerations: []
   affinity: {}

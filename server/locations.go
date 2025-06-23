@@ -13,17 +13,16 @@ import (
 func (s *Server) getLocations() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
-		s.shipper.Collect(now, r)
+		defer s.shipper.Collect(now, r)
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		s.Respoder.SendOK(w, locations)
-		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
 
 func (s *Server) postLocation() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
-		s.shipper.Collect(now, r)
+		defer s.shipper.Collect(now, r)
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
 		loc := wire.Location{}
 		if err := json.NewDecoder(r.Body).Decode(&loc); err != nil {
@@ -39,18 +38,17 @@ func (s *Server) postLocation() func(w http.ResponseWriter, r *http.Request) {
 			Latitude:   loc.Latitude,
 		}
 
-		locations = append(locations, location)
+		s.locations = append(s.locations, location)
 		s.Logger.Info("Add a new location to memory " + loc.Name)
 		s.Respoder.SendOK(w)
-		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
 
 func (s *Server) getLocationById() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		now := time.Now()
-		s.shipper.Collect(now, r)
 		s.Logger.Info("Server go request" + " method: " + r.Method + " uri: " + r.RequestURI)
+		now := time.Now()
+		defer s.shipper.Collect(now, r)
 		idStr, _ := strings.CutPrefix(r.URL.Path, "/locations/")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
@@ -59,9 +57,8 @@ func (s *Server) getLocationById() func(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 
-		loc := locations[id]
+		loc := s.locations[id]
 		s.Logger.Info("Location is " + loc.Name)
 		s.Respoder.SendOK(w)
-		s.shipper.SetCurrentUsersEnd(r)
 	}
 }
