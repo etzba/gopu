@@ -37,21 +37,21 @@ func (r Respond) SendOK(w http.ResponseWriter, obj ...interface{}) {
 			r.Logger.Error("could not write body", err)
 		}
 	} else {
-		w.Write([]byte("OK!"))
+		w.Write([]byte("OK!")) //nolint:errcheck
 	}
 }
 
 func (r Respond) SendNothing(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNoContent)
-	w.Write([]byte("No content"))
+	w.Write([]byte("No content")) //nolint:errcheck
 }
 
 func (r Respond) SendError(w http.ResponseWriter, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
-	w.Write([]byte(err.Error()))
+	w.Write([]byte(err.Error())) //nolint:errcheck
 }
 
 func (r Respond) SendBadRequest(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusBadRequest)
-	w.Write([]byte("Bad request"))
+	w.Write([]byte("Bad request")) //nolint:errcheck
 }

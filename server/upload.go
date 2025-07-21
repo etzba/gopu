@@ -27,7 +27,11 @@ func (s *Server) uploadFileHandlerfunc() func(w http.ResponseWriter, r *http.Req
 			s.Respoder.SendBadRequest(w)
 			return
 		}
-		defer file.Close()
+		defer func() {
+			if err := file.Close(); err != nil {
+				s.Logger.Error("could not close file", err)
+			}
+		}()
 
 		buff := make([]byte, 0)
 		_, err = file.Read(buff)
@@ -49,7 +53,11 @@ func (s *Server) uploadFileHandlerfunc() func(w http.ResponseWriter, r *http.Req
 			s.Respoder.SendError(w, err)
 			return
 		}
-		defer f.Close()
+		defer func() {
+			if err := f.Close(); err != nil {
+				s.Logger.Error("could not close file", err)
+			}
+		}()
 
 		_, err = f.Write(buff)
 		if err != nil {

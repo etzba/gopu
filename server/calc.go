@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (s *Server) getResultByUrlPath() func(w http.ResponseWriter, r *http.Request) {
+func (s *Server) getResultByUrlPath() func(w http.ResponseWriter, r *http.Request) { //nolint:unused
 	return func(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
 		defer s.shipper.Collect(now, r)
