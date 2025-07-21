@@ -36,3 +36,5 @@ assets/*
 
 pkg/debug
 pkg/debug/*
+
+report.xml

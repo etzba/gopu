@@ -15,9 +15,13 @@ down:
 cleanup:
 	docker rm $$(docker stop $$(docker ps -a -q --filter ancestor=etzba/gopu:latest --format="{{.ID}}"))
 
-# tests and run
+# tests, lint and run
 test:
 	go test -v ./...
+
+# TODO: set test from golang client
+test-e2e:
+	echo e2e
 
 run:
 	go run main.go
@@ -25,6 +29,9 @@ run:
 upload:
 	goploader --dir=files/ --url=http://localhost:8080/pics --method=post
 	goploader --dir=files/ --url=http://localhost:8080/docs --method=put
+
+lint:
+	golangci-lint run ./...
 
 # test with etzba 
 exec:

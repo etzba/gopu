@@ -60,6 +60,6 @@ func getDistanceByPythagoras(loc1 wire.Location, loc2 wire.Distance) float64 {
 }
 
 // https://en.wikipedia.org/wiki/Haversine_formula
-func getDistanceByHarvestine() {
+func getDistanceByHarvestine() { //nolint:unused
 
 }
