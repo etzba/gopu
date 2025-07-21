@@ -55,3 +55,5 @@ install:
 upgrade:
 	helm upgrade --install ${NAME} chart/ -n ${NAME}
 
+remove:
+	kubectl delete ns ${NAME}
