@@ -1,18 +1,15 @@
-
-api: 
-  name: gopu
-  image:
-    repository: etzba/gopu
-    tag: "development"
-  url: gopu-svc
-  containerPort: 8080
-  resources:
-    limits:
-      cpu: 400m
-      memory: 2048Mi
-    requests:
-      cpu: 100m
-      memory: 512Mi
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
+name: gopu
+image:
+  repository: etzba/gopu
+  tag: "latest"
+containerPort: 8080
+resources:
+  limits:
+    cpu: 400m
+    memory: 2048Mi
+  requests:
+    cpu: 100m
+    memory: 512Mi
+nodeSelector: {}
+tolerations: []
+affinity: {}
