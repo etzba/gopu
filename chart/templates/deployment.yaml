@@ -38,3 +38,7 @@ spec:
           env:
           - name: RELEASE_STAGE
             value: testing
+      {{- if .Values.pullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.pullSecret }}
+      {{- end }}
