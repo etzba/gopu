@@ -1,19 +1,22 @@
 # build
-FROM golang:1.24-bookworm AS be_builder
-
+FROM golang:1.26-bookworm AS builder
+LABEL authors="support@etzba.com, Nadav Ben Mazia"
+# copy go mod and sum for better caching
 COPY . /build
-
 WORKDIR /build
+# Go mod download and verify dependencies
+RUN go mod download
+RUN go mod verify
+# Build the app
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    -ldflags='-w -s -extldflags "-static"' \
+    -a -installsuffix cgo \
+    -o gopu main.go
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o gopu main.go
-
-# alpine
-FROM alpine:3.21
-
-RUN apk add ca-certificates
-
-COPY --from=be_builder /build/gopu /gopu
-
+# New distroless image with no root
+FROM gcr.io/distroless/static:nonroot
+# Copy the app from builder
+COPY --from=builder /build/gopu /gopu
 WORKDIR /
-
+USER 65532:65532
 CMD ["./gopu"]
