@@ -2,7 +2,8 @@ version: '3'
 
 services:
   gopu:
-    image: etzba/gopu:latest
+    build:
+      context: .
     environment:
       - RELEASE_STAGE=testing
     ports:
