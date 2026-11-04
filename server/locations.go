@@ -57,6 +57,11 @@ func (s *Server) getLocationById() func(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 
+		if id > len(s.locations)-1 {
+			s.Respoder.SendBadRequest(w)
+			return
+		}
+
 		loc := s.locations[id]
 		s.Logger.Info("Location is " + loc.Name)
 		s.Respoder.SendOK(w)
