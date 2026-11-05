@@ -9,7 +9,10 @@ import (
 	"time"
 )
 
-const maxUploadSize = 5 * 1024 * 1024 * 1024
+const (
+	maxUploadSize = 5 * 1024 * 1024 * 1024
+	uploadsDir    = "/uploads"
+)
 
 func (s *Server) uploadFileHandlerfunc() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +44,7 @@ func (s *Server) uploadFileHandlerfunc() func(w http.ResponseWriter, r *http.Req
 			return
 		}
 
-		if err = os.MkdirAll("./uploads", os.ModePerm); err != nil {
+		if err = os.MkdirAll(uploadsDir, os.ModePerm); err != nil {
 			s.Logger.Error("Cannot create dir ", err)
 			s.Respoder.SendError(w, err)
 			return

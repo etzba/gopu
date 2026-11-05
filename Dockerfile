@@ -13,13 +13,16 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
     -a -installsuffix cgo \
     -o gopu main.go
 
+RUN mkdir /uploads && \
+    chmod 0777 /uploads/ && \
+    chown -R 65532:65532 /uploads && \
+    touch /uploads/build
+
 # New distroless image with no root
 FROM gcr.io/distroless/static:nonroot
 # Copy the app from builder
 COPY --from=builder /build/gopu /gopu
-RUN mkdir /uploads && \
-    chmod 0777 /uploads/ && \
-    chown -R 65532:65532 /uploads
+COPY --from=builder /build/uploads/build /uploads/build
 WORKDIR /
 USER 65532:65532
 CMD ["./gopu"]
