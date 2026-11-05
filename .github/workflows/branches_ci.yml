@@ -77,8 +77,10 @@ jobs:
           registry: ghcr.io
           username: etzba
           password: ${{ secrets.ghcrToken }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
       - name: Publish container image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
