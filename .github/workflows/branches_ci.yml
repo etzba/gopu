@@ -124,17 +124,12 @@ jobs:
           COSIGN_KEY: |
             ${{secrets.COSIGN_KEY}}
           COSIGN_PASSWORD: ""
-      - name: Check images
+      - name: Inspect images with buildx
         uses: docker/setup-buildx-action@v4
         with:
-          command: |
-            docker buildx imagetools inspect ghcr.io/${{ github.repository }}:${{ github.sha }} && \
-            docker pull ghcr.io/${{ github.repository }}:${{ github.sha }} && \
-            echo '${{ secrets.COSIGN_PUBLIC_KEY }}' > cosign.pub && \
-            acosign verify --key cosign.pub ghcr.io/${{ github.repository }}:${{ github.sha }}
-      - name: Check images
+          command: docker buildx imagetools inspect ghcr.io/${{ github.repository }}:${{ github.sha }}
+      - name: Verify cosign with public key
         run: |
-          docker buildx imagetools inspect ghcr.io/${{ github.repository }}:${{ github.sha }}
           docker pull ghcr.io/${{ github.repository }}:${{ github.sha }}
           echo '${{ secrets.COSIGN_PUBLIC_KEY }}' > cosign.pub
           cosign verify --key cosign.pub ghcr.io/${{ github.repository }}:${{ github.sha }}
