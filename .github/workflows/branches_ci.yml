@@ -101,7 +101,7 @@ jobs:
           tags: type=sha,format=long
 
       - name: Build and Push container images
-        uses: docker/build-push-action@v6.18.0
+        uses: docker/build-push-action@v7
         id: build-and-push
         with:
           context: .
