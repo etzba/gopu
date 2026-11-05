@@ -163,12 +163,9 @@ jobs:
           COSIGN_KEY: |
             ${{secrets.COSIGN_KEY}}
           COSIGN_PASSWORD: ""
-      - name: Inspect images with buildx
-        uses: docker/setup-buildx-action@v4
-        with:
-          command: docker buildx imagetools inspect docker.io/${{ github.repository }}:latest
-      - name: Verify cosign signature with public key
+      - name: Inspect images with buildx and verify cosign signature with public key
         run: |
+          docker buildx imagetools inspect docker.io/${{ github.repository }}:latest
           docker pull docker.io/${{ github.repository }}:latest
           echo '${{ secrets.COSIGN_PUBLIC_KEY }}' > cosign.pub
           cosign verify --key cosign.pub docker.io/${{ github.repository }}:latest
