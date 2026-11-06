@@ -17,6 +17,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
 FROM gcr.io/distroless/static:nonroot
 # Copy the app from builder
 COPY --from=builder /build/gopu /gopu
-WORKDIR /
 USER 65532:65532
+WORKDIR /uploads
+WORKDIR /
 CMD ["./gopu"]
