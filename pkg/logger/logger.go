@@ -20,18 +20,18 @@ func New() *Log {
 }
 
 func (l *Log) Info(msg string) {
-	fmt.Println("INFO", formatTime(time.Now()), "MESSAGE: "+msg)
+	fmt.Println(formatTime(time.Now()), "[INFO]", " "+msg)
 }
 
 func (l *Log) Warn(msg string, err error) {
-	fmt.Println("WARN", formatTime(time.Now()), "MESSAGE: "+msg, "WARN: "+err.Error())
+	fmt.Println(formatTime(time.Now()), "[WARN]", " "+msg, err.Error())
 }
 
 func (l *Log) Error(msg string, err error) {
-	fmt.Println("ERROR", formatTime(time.Now()), "MESSAGE: "+msg, "ERROR: "+err.Error())
+	fmt.Println(formatTime(time.Now()), "[ERROR]", " "+msg, err.Error())
 }
 
 func formatTime(now time.Time) string {
 	time := strings.ReplaceAll(now.UTC().Format(time.RFC3339), "T", " ")
-	return "[" + strings.ReplaceAll(time, "Z", "") + "]"
+	return strings.ReplaceAll(time, "Z", "")
 }
